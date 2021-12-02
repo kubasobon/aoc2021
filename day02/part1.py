@@ -37,4 +37,4 @@ if __name__ == "__main__":
     with open("input.txt") as f:
         data = f.readlines()
     s.parse(data)
-    print(f"Sub's position is {s.position}")
+    print(f"Sub's position is {s.position()}")
