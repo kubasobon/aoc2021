@@ -5,6 +5,7 @@ with open("input.txt") as f:
     data = f.readlines()
 data = [l.strip(string.whitespace) for l in data]
 
+
 def filter_data(data, use_most_common, default):
     remaining_data = data[:]
     position = 0
@@ -27,12 +28,12 @@ def filter_data(data, use_most_common, default):
         # print(f"filter sign: {filter_sign}")
 
         remaining_data = [
-            line for line in remaining_data
-            if line[position] == filter_sign
+            line for line in remaining_data if line[position] == filter_sign
         ]
         position += 1
     assert len(remaining_data) == 1
     return remaining_data[0]
+
 
 oxygen = int(filter_data(data, True, "1"), 2)
 co2 = int(filter_data(data, False, "0"), 2)
