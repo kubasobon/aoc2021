@@ -5,18 +5,20 @@ from collections import Counter
 BOARD_SIDE = 5
 DIAGONALS = [
     [(i, i) for i in range(BOARD_SIDE)],
-    [(BOARD_SIDE-i-1, i) for i in range(BOARD_SIDE)],
+    [(BOARD_SIDE - i - 1, i) for i in range(BOARD_SIDE)],
 ]
 DIAGONALS_ENABLED = False
+
 
 def print_board(b):
     for y in range(BOARD_SIDE):
         for x in range(BOARD_SIDE):
             s = str(b.get(x, y))
             if len(s) == 1:
-                s = " "+s
+                s = " " + s
             print(s, end=" ")
         print("")
+
 
 class BingoBoard:
     def __init__(self):
@@ -114,4 +116,3 @@ if __name__ == "__main__":
                 sys.exit(0)
     print("E! No winners")
     sys.exit(1)
-
