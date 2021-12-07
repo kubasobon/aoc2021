@@ -1,5 +1,11 @@
 import string
 from collections import Counter
+from functools import lru_cache
+
+
+@lru_cache(maxsize=2000)
+def step_cost(n):
+    return sum(range(n + 1))
 
 
 def align_crab_subs(crab_subs):
@@ -8,8 +14,7 @@ def align_crab_subs(crab_subs):
     for position in range(min(c.keys()), max(c.keys()) + 1):
         cost = 0
         for crab_position, count in c.items():
-            step_cost = sum(range(abs(position - crab_position)+1))
-            cost += step_cost * count
+            cost += step_cost(abs(position - crab_position)) * count
         cost_per_position[position] = cost
     # lowest cost position
     return cost_per_position.most_common()[-1]
