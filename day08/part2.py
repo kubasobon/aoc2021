@@ -20,8 +20,9 @@ def build_translator(pattern_definitions):
             table[p] = 4
             pattern_4 = p
         elif len(p) == 5:
-            if all(ch in pattern_1 for ch in p):
+            if all(ch in p for ch in pattern_1):
                 table[p] = 3
+                continue
             remaining = [ch for ch in p if ch not in pattern_7 and ch not in pattern_4]
             if len(remaining) == 1:
                 table[p] = 5
@@ -30,8 +31,11 @@ def build_translator(pattern_definitions):
             else:
                 raise ValueError(f"Could not map '{p}'")
         elif len(p) == 6:
-            if all(ch in pattern_7 for ch in p):
-                table[p] = 9
+            if all(ch in p for ch in pattern_7):
+                if all(ch in p for ch in pattern_4):
+                    table[p] = 9
+                else:
+                    table[p] = 0
             else:
                 table[p] = 6
         elif len(p) == 7:
@@ -50,7 +54,7 @@ def build_translator(pattern_definitions):
 
 
 if __name__ == "__main__":
-    with open("test_input.txt") as f:
+    with open("input.txt") as f:
         data = [l.strip(string.whitespace) for l in f.readlines()]
     total = 0
     for line in data:
@@ -60,5 +64,5 @@ if __name__ == "__main__":
 
         translate = build_translator(pattern_definitions)
         out = translate(display)
-        print(out)
+        total += int(out)
     print(total)
