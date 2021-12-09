@@ -60,11 +60,9 @@ def find_basin(m, mx, my, minimum):
         ]
         # rules
         to_check_new = [coords for coords in to_check_new if m[coords] < 9]
-        draw_map(m, mx, my, to_check_new, minimum)
-        breakpoint()
         basin.extend(to_check)
         to_check = to_check_new
-    return basin
+    return list(set(basin))
 
 
 if __name__ == "__main__":
@@ -82,5 +80,8 @@ if __name__ == "__main__":
     m, mx, my = make_cave_map(data)
     local_min = find_local_min(m, mx, my)
     basins = [find_basin(m, mx, my, minimum) for minimum in local_min]
-    for b in basins:
-        print(len(b), ":   ", b)
+
+    basin_size = [len(b) for b in basins]
+    basin_size.sort(reverse=True)
+    print(f"Three largest basins: {basin_size[:3]}")
+    print(f"Result: {basin_size[0]*basin_size[1]*basin_size[2]}")
