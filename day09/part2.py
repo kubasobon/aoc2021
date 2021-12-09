@@ -76,7 +76,6 @@ if __name__ == "__main__":
     with open("input.txt") as f:
         data = [l.strip(string.whitespace) for l in f.readlines()]
 
-    data = test_data
     m, mx, my = make_cave_map(data)
     local_min = find_local_min(m, mx, my)
     basins = [find_basin(m, mx, my, minimum) for minimum in local_min]
