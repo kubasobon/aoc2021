@@ -30,11 +30,13 @@ def get_risk(m, local_min):
     return sum(m[coords] + 1 for coords in local_min)
 
 
-def draw_map(m, mx, my, points):
+def draw_map(m, mx, my, points, source=None):
     for y in range(my):
         for x in range(mx):
             if (x, y) in points:
                 print("+", end="")
+            elif source is not None and (x, y) == source:
+                print("#", end="")
             else:
                 print(m[(x, y)], end="")
         print()
@@ -58,6 +60,8 @@ def find_basin(m, mx, my, minimum):
         ]
         # rules
         to_check_new = [coords for coords in to_check_new if m[coords] < 9]
+        draw_map(m, mx, my, to_check_new, minimum)
+        breakpoint()
         basin.extend(to_check)
         to_check = to_check_new
     return basin
