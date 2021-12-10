@@ -1,11 +1,13 @@
 import string
+
 chunks = "()[]{}<>"
 score = {
-    ")": 3,
-    "]": 57,
-    "}": 1197,
-    ">": 25137,
+    "(": 1,
+    "[": 2,
+    "{": 3,
+    "<": 4,
 }
+
 
 def validate_line(line):
     q = []
@@ -23,12 +25,13 @@ def validate_line(line):
             last_opening_brace = q[-1]
             q = q[:-1]
         except IndexError:
-            return False, symbol
+            return False, None
 
         opening_idx = chunks.find(last_opening_brace)
         if opening_idx + 1 != idx:
-            return False, symbol
-    return True, ""
+            return False, None
+    return True, q
+
 
 if __name__ == "__main__":
     data = [
@@ -45,12 +48,15 @@ if __name__ == "__main__":
     ]
     with open("input.txt") as f:
         data = [l.strip(string.whitespace) for l in f]
-    total = 0
+    line_score = []
     for line in data:
-        is_valid, symbol = validate_line(line)
-        if is_valid:
+        is_valid, finisher = validate_line(line)
+        if not is_valid:
             continue
-        total += score[symbol]
-    print(f"Total score: {total}")
-
-
+        total = 0
+        for brace in finisher[::-1]:
+            total = 5 * total + score[brace]
+        line_score.append(total)
+    line_score.sort()
+    print(line_score)
+    print(f"Middle score: {line_score[round(len(line_score)/2)]}")
