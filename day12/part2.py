@@ -146,11 +146,8 @@ if __name__ == "__main__":
     ]
     with open("input.txt") as f:
         data = [l.strip(string.whitespace) for l in f]
-    data = test_data_a
     start = build_cave_system(data)
     # print_cave_system(start)
     walk = walk_cave_system(start)
     paths = flatten_the_walk(walk)
-    for p in paths:
-        print(p)
     print(f"There are {len(paths)} paths that visit small caves at most once.")
