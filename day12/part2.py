@@ -1,11 +1,13 @@
 import string
 from collections import Counter
+from functools import cache
 
 
 class Cave:
     def __init__(self, name):
         self.name = name
         self.tunnels = []
+        self.__hash = None
 
     def is_small(self):
         return self.name.islower() and self.name not in ("start", "end")
@@ -30,12 +32,15 @@ class Cave:
         return self.name == other.name
 
     def __hash__(self):
-        return hash(f"{self.name}: {self.tunnels}")
+        if self.__hash is None:
+            self.__hash = hash(f"{self.name}: {self.tunnels}")
+        return self.__hash
 
 
 class Path:
     def __init__(self, caves):
         self.caves = caves
+        self.__hash = None
 
     def __len__(self):
         return len(self.caves)
@@ -47,7 +52,9 @@ class Path:
         return self.caves == other.caves
 
     def __hash__(self):
-        return hash(tuple(self.caves))
+        if self.__hash is None:
+            self.__hash = hash(tuple(self.caves))
+        return self.__hash
 
 
 def build_cave_system(data):
