@@ -103,6 +103,18 @@ if __name__ == "__main__":
         "A-end",
         "b-end",
     ]
+    test_data = [
+        "dc-end",
+        "HN-start",
+        "start-kj",
+        "dc-start",
+        "dc-HN",
+        "LN-dc",
+        "HN-end",
+        "kj-sa",
+        "kj-HN",
+        "kj-dc",
+    ]
     data = test_data
     start = build_cave_system(data)
     # print_cave_system(start)
