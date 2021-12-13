@@ -1,37 +1,11 @@
 import colorama
 
 
-def flip(grid, x_axis=False, y_axis=False):
-    assert x_axis or y_axis
-    new = {}
-    max_x = max(x for x, y in grid.keys())
-    max_y = max(y for x, y in grid.keys())
-    for x, y in self.grid.keys():
-        nx = x if not x_axis else max_x - x
-        ny = y if not y_axis else max_y - y
-        new[(x, y)] = grid[(x, y)]
-    return new
-
-
-def parse_data(data) -> (Layer, list):
-    grid = {}
-    folds = []
-    for i, l in enumerate(data):
-        if l == "":
-            break
-        x, y = l.split(",")
-        grid[(x, y)] = True
-
-    # ("y", 7), ("x", 5)
-    folds = [l.split()[-1].split("=") for l in data[i:]]
-    return Layer(grid), folds
-
-
 class Layer:
-    def __init__(self, grid: dict[(int, int):bool]):
+    def __init__(self, grid):
         self.grid = grid
 
-    def fold(self, axis: str, position: int) -> Layer:
+    def fold(self, axis: str, position: int):
         this, new = {}, {}
         for x, y in self.grid.keys():
             coords = {"x": x, "y": y}
@@ -53,6 +27,33 @@ class Layer:
                 else:
                     print(".", end="")
             print()
+
+
+def parse_data(data: list):
+    grid = {}
+    folds = []
+    for i, l in enumerate(data):
+        if l == "":
+            break
+        x, y = l.split(",")
+        grid[(int(x), int(y))] = True
+
+    # ("y", 7), ("x", 5)
+    folds = [l.split()[-1].split("=") for l in data[i + 1 :]]
+    folds = [(axis, int(pos)) for axis, pos in folds]
+    return Layer(grid), folds
+
+
+def flip(grid: dict, x_axis: bool = False, y_axis: bool = False) -> dict:
+    assert x_axis or y_axis
+    new = {}
+    max_x = max(x for x, y in grid.keys())
+    max_y = max(y for x, y in grid.keys())
+    for x, y in self.grid.keys():
+        nx = x if not x_axis else max_x - x
+        ny = y if not y_axis else max_y - y
+        new[(x, y)] = grid[(x, y)]
+    return new
 
 
 if __name__ == "__main__":
