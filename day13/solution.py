@@ -1,4 +1,6 @@
 import colorama
+import string
+from PIL import Image, ImageDraw
 
 
 class Layer:
@@ -13,9 +15,9 @@ class Layer:
                 new[(x, y)] = self.grid[(x, y)]
             else:
                 this[(x, y)] = self.grid[(x, y)]
-        new = flip(new, axis == "x", axis == "y")
+        new = flip(new, position, axis == "x", axis == "y")
+        this.update(new)
         self.grid = this
-        return new
 
     def draw(self):
         max_x = max(x for x, y in self.grid)
@@ -29,8 +31,7 @@ class Layer:
             print()
 
     def merge(self, new_grid):
-        for x, y in new_grid:
-            self.grid[(x, y)] = True
+        self.grid.update(new_grid)
 
 
 def parse_data(data: list):
@@ -48,14 +49,12 @@ def parse_data(data: list):
     return Layer(grid), folds
 
 
-def flip(grid: dict, x_axis: bool = False, y_axis: bool = False) -> dict:
+def flip(grid: dict, position: int, x_axis: bool = False, y_axis: bool = False) -> dict:
     assert x_axis or y_axis
     new = {}
-    max_x = max(x for x, y in grid)
-    max_y = max(y for x, y in grid)
     for x, y in grid:
-        nx = x if not x_axis else max_x - x
-        ny = y if not y_axis else max_y - y
+        nx = x if not x_axis else 2 * position - x
+        ny = y if not y_axis else 2 * position - y
         new[(nx, ny)] = grid[(x, y)]
     return new
 
@@ -85,15 +84,14 @@ if __name__ == "__main__":
         "fold along x=5",
     ]
 
-    data = test_data
+    with open("input.txt") as f:
+        data = [l.strip(string.whitespace) for l in f]
+    # data = test_data
     layer, folds = parse_data(data)
-    layer.draw()
-    print("\n")
-    for fold in folds:
+    for i, fold in enumerate(folds):
         print(f"Folded along {fold[0]}={fold[1]}")
-        new_grid = layer.fold(*fold)
-        layer.merge(new_grid)
-        layer.draw()
-        print("\n")
-    pts = sum(1 for _ in layer.grid)
-    print(f"Visible points: {pts}")
+        layer.fold(*fold)
+        if i == 0:  # part1
+            pts = sum(1 for _ in layer.grid)
+            print(f"Points visible after 1st fold: {pts}")
+    layer.draw()
