@@ -1,3 +1,6 @@
+import string
+
+
 class Cave:
     def __init__(self, name):
         self.name = name
@@ -21,6 +24,7 @@ class Cave:
 
     def __repr__(self):
         return self.name
+
 
 class Path:
     def __init__(self, caves):
@@ -80,6 +84,7 @@ def walk_cave_system(cave, path_so_far=None):
         tunnel_paths.append(walk_cave_system(t, path_so_far[:]))
     return [p for p in tunnel_paths if len(p) > 0]
 
+
 def flatten_the_walk(walk):
     paths = []
     for x in walk:
@@ -90,7 +95,6 @@ def flatten_the_walk(walk):
         else:
             raise TypeError("Cannot flatten this")
     return paths
-
 
 
 if __name__ == "__main__":
@@ -115,9 +119,10 @@ if __name__ == "__main__":
         "kj-HN",
         "kj-dc",
     ]
-    data = test_data
+    with open("input.txt") as f:
+        data = [l.strip(string.whitespace) for l in f]
     start = build_cave_system(data)
     # print_cave_system(start)
     walk = walk_cave_system(start)
-    for path in flatten_the_walk(walk):
-        print(path)
+    paths = flatten_the_walk(walk)
+    print(f"There are {len(paths)} paths that visit small caves at most once.")
