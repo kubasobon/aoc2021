@@ -1,6 +1,5 @@
 import string
 from collections import Counter
-from functools import cache
 
 
 class Cave:
