@@ -1,46 +1,35 @@
 import string
 import collections
 
-class Pair:
-    def __init__(self, pair, left=None, right=None):
-        self.pair = pair
-        self.left = left
-        self.right = right
-
-    def __repr__(self):
-        if self.right is None:
-            return self.pair
-        else:
-            return f"{self.pair[0]}{self.right}"
-
 def parse_template(template):
-    root = None
-    left = None
-    for i in range(1, len(template)):
-        str_pair = template[i - 1 : i + 1]
-        p = Pair(str_pair, left=left)
-        if root is None:
-            root = p
-        if left is not None:
-            left.right = p
-        left = p
-    return root
+    pairs = (template[i-1:i+1] for i in range(1, len(template)))
+    return collections.Counter(pairs)
 
 def parse_rules(lines):
     return {pair: infix for pair, infix in (l.split(" -> ") for l in lines)}
 
 
-def process_once(pair_chain, rules):
-    new_template = []
-    for i in range(1, len(template)):
-        pair = template[i - 1 : i + 1]
-        new_template.append(pair[0])
-        new_template.append(rules[pair])
-        # print(pair)
-        # print(new_template)
-        # breakpoint()
-    new_template.append(template[-1])
-    return "".join(new_template)
+def process_once(pairs, rules):
+    new_pairs = collections.Counter()
+    for pair, count in pairs.items():
+        infix = rules[pair]
+        a, b = pair[0], pair[1]
+        new_pairs[a+infix] += count
+        new_pairs[infix+b] += count
+    return new_pairs
+
+def count_letters(template, pairs):
+    letters = collections.Counter()
+    for pair, count in pairs.items():
+        a, b = pair[0], pair[1]
+        letters[a] += count
+        letters[b] += count
+    true_count = collections.Counter()
+    for letter, count in letters.items():
+        if template[0] == letter or template[-1] == letter:
+           count += 1
+        true_count[letter] = int(count/2)
+    return true_count.most_common()
 
 
 if __name__ == "__main__":
@@ -68,15 +57,14 @@ if __name__ == "__main__":
     with open("input.txt") as f:
         data = [l.strip(string.whitespace) for l in f]
     data = test_data
-    pair_chain = parse_template(data[0])
+    pairs = parse_template(data[0])
     rules = parse_rules(data[2:])
-    print(f"Template: {pair_chain}")
+    print(f"Template: {pairs}")
 
     for i in range(10):
-        # template = process_once(template, rules)
-        print(f"After step {i+1}: {pair_chain}")
-    print(f"Template length after step {i+1}: {len(str(pair_chain))}")
-    mc = collections.Counter(str(pair_chain)).most_common()
+        pairs = process_once(pairs, rules)
+
+    mc = count_letters(data[0], pairs)
     print(f"Most common: '{mc[0][0]}'={mc[0][1]}")
     print(f"Least common: '{mc[-1][0]}'={mc[-1][1]}")
     print(f"Result: {mc[0][1] - mc[-1][1]}")
