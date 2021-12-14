@@ -59,12 +59,12 @@ if __name__ == "__main__":
 
     with open("input.txt") as f:
         data = [l.strip(string.whitespace) for l in f]
-    data = test_data
+    # data = test_data
     pairs = parse_template(data[0])
     rules = parse_rules(data[2:])
     print(f"Template: {pairs}")
 
-    for i in range(10):
+    for i in range(40):
         pairs = process_once(pairs, rules)
 
     mc = count_letters(data[0], pairs)
