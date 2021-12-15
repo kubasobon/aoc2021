@@ -97,7 +97,8 @@ if __name__ == "__main__":
         "1293138521",
         "2311944581",
     ]
-    data = test_data
+    with open("input.txt") as f:
+        data = [l.strip(string.whitespace) for l in f]
     grid, end = parse_risk_map(data)
     visited, pathmaker = dijkstra(grid, (0, 0), end)
     path = make_path(pathmaker, end, (0, 0))
