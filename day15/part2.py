@@ -1,4 +1,4 @@
-from math import sqrt
+import sys
 import string
 import colorama
 
@@ -23,21 +23,21 @@ def parse_risk_map(data):
             grid[(x, y)] = int(v)
     return grid, (x, y)
 
+
 def enlarge_map(grid, bounds):
     new_grid = {}
-    for quad_y in range(5):
-        for quad_x in range(5):
-            for y in range(bounds[1]+1):
-                for x in range(bounds[0]+1):
-                    original_cost = grid[(x, y)]
-                    cost = (original_cost + quad_x + quad_y) % 9
-                    new_coords = (
-                        x + (bounds[0]+1)*quad_x,
-                        y + (bounds[1]+1)*quad_y
-                    )
-                    new_grid[new_coords] = cost
+    max_x, max_y = bounds[0] + 1, bounds[1] + 1
+    for y in range(max_x * 5):
+        for x in range(max_y * 5):
+            quad_x = int(x / max_x)
+            quad_y = int(y / max_y)
+            original_x = x % max_x
+            original_y = y % max_y
+            risk = grid[original_x, original_y] + quad_x + quad_y
+            if risk > 9:
+                risk = risk % 10 + 1
+            new_grid[(x, y)] = risk
     return new_grid
-
 
 
 def dijkstra(grid, start, bounds):
@@ -87,9 +87,11 @@ def make_path(pathmaker, start, end):
     return path[::-1]
 
 
-def draw_map(grid, path, bounds):
-    for y in range(bounds[1] + 1):
-        for x in range(bounds[0] + 1):
+def draw_map(grid, path):
+    max_y = max(y for x, y in grid)
+    max_x = max(x for x, y in grid)
+    for y in range(max_y + 1):
+        for x in range(max_x + 1):
             if (x, y) in path:
                 print(
                     colorama.Fore.YELLOW + str(grid[(x, y)]),
@@ -115,11 +117,14 @@ if __name__ == "__main__":
     ]
     with open("input.txt") as f:
         data = [l.strip(string.whitespace) for l in f]
+    data = test_data
     grid, end = parse_risk_map(data)
+    grid = enlarge_map(grid, end)
+    end = ((end[0] + 1) * 5 - 1, (end[1] + 1) * 5 - 1)
     visited, pathmaker = dijkstra(grid, (0, 0), end)
     path = make_path(pathmaker, end, (0, 0))
     print("Path of lowest risk:")
-    draw_map(grid, path, end)
+    draw_map(grid, path)
     # starting point cost does not count
     risk = sum(grid[coords] for coords in path) - grid[(0, 0)]
     print(f"\nrisk={risk}")
