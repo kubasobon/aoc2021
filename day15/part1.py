@@ -3,21 +3,17 @@ import string
 import colorama
 
 
+# no diagonals
 __adjacency = [
     (0, 1),
-    (1, 1),
+    # (1, 1),
     (1, 0),
-    (1, -1),
+    # (1, -1),
     (0, -1),
-    (-1, -1),
+    # (-1, -1),
     (-1, 0),
-    (-1, 1),
+    # (-1, 1),
 ]
-
-
-class Path(list):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
 
 
 def parse_risk_map(data):
@@ -28,51 +24,65 @@ def parse_risk_map(data):
     return grid, (x, y)
 
 
-def simple_pathfinder(grid, end, pos, path_so_far=None):
-    if path_so_far is None:
-        path_so_far = Path()
-    x, y = pos
+def dijkstra(grid, start, bounds):
+    max_x, max_y = bounds
+    visited = {start: 0}
+    pathmaker = {}
+    nodes = set(x for x in grid)
 
-    sep = "".join(" " for _ in path_so_far)
-    psf = " ".join(str(t) for t in path_so_far)
-    # print(f"{sep}{psf} -> ({x}, {y})")
-    # breakpoint()
+    while nodes:
+        min_node = None
+        for n in nodes:
+            if n not in visited:
+                continue
+            if min_node is None:
+                min_node = n
+            elif visited[n] < visited[min_node]:
+                min_node = n
+        if min_node is None:
+            break
+        nodes.remove(min_node)
+        cost = visited[min_node]
+
+        x, y = min_node
+        for dx, dy in __adjacency:
+            nx, ny = x + dx, y + dy
+            if nx < 0 or nx > max_x or ny < 0 or ny > max_y:
+                continue
+            nstart = (nx, ny)
+            ncost = cost + grid[nstart]
+            if nstart not in visited or ncost < visited[nstart]:
+                visited[nstart] = ncost
+                # if nstart not in pathmaker:
+                #     pathmaker[nstart] = []
+                # pathmaker[nstart].append(min_node)
+                pathmaker[nstart] = min_node
+
+    return visited, pathmaker
 
 
-    path_so_far.append(pos)
-    max_x, max_y = end
-    if pos == end:
-        return path_so_far
-    paths = []
-    for dx, dy in __adjacency:
-        new_x, new_y = x + dx, y + dy
-        new_pos = (new_x, new_y)
-        # no crossing grid boundaries
-        if new_x < 0 or new_x > max_x:
-            continue
-        if new_y < 0 or new_y > max_y:
-            continue
-        # no turning back
-        if new_pos in path_so_far:
-            continue
-        if new_x == 0 and new_y == 0:
-            continue
-        # heuristics
-        if distance(pos, end) < distance(new_pos, end):
-            continue
-        # print(f"{sep}checking ({new_x}, {new_y})")
-        finds = simple_pathfinder(grid, end, (new_x, new_y), path_so_far[:])
-        if isinstance(finds, Path):
-            paths.append(finds)
-        else:
-            paths.extend(finds)
-    # breakpoint()
-    return [p for p in paths if len(p) > 0]
+def make_path(pathmaker, start, end):
+    path = []
+    last = start
+    while last != end:
+        path.append(last)
+        last = pathmaker[last]
+    path.append(last)
+    return path[::-1]
 
-def distance(a, b):
-    xa, ya = a
-    xb, yb = b
-    return sqrt(pow(xb-xa, 2) + pow(yb-ya, 2))
+
+def draw_map(grid, path, bounds):
+    for y in range(bounds[1] + 1):
+        for x in range(bounds[0] + 1):
+            if (x, y) in path:
+                print(
+                    colorama.Fore.YELLOW + str(grid[(x, y)]),
+                    end=colorama.Style.RESET_ALL,
+                )
+            else:
+                print(grid[(x, y)], end="")
+        print()
+
 
 if __name__ == "__main__":
     test_data = [
@@ -89,6 +99,10 @@ if __name__ == "__main__":
     ]
     data = test_data
     grid, end = parse_risk_map(data)
-    paths = simple_pathfinder(grid, end, (0, 0))
-    breakpoint()
-    paths = flatten_paths(paths)
+    visited, pathmaker = dijkstra(grid, (0, 0), end)
+    path = make_path(pathmaker, end, (0, 0))
+    print("Path of lowest risk:")
+    draw_map(grid, path, end)
+    # starting point cost does not count
+    risk = sum(grid[coords] for coords in path) - grid[(0, 0)]
+    print(f"\nrisk={risk}")
