@@ -45,6 +45,7 @@ def dijkstra(grid, start, bounds):
     visited = {start: 0}
     pathmaker = {}
     nodes = set(x for x in grid)
+    print(f"Dijkstra for {len(grid)} nodes: ", flush=True)
 
     while nodes:
         min_node = None
@@ -73,7 +74,10 @@ def dijkstra(grid, start, bounds):
                 #     pathmaker[nstart] = []
                 # pathmaker[nstart].append(min_node)
                 pathmaker[nstart] = min_node
+        if len(visited) % 1000 == 0:
+            print(f"+ {len(visited)}", end="\r", flush=True)
 
+    print()
     return visited, pathmaker
 
 
@@ -117,14 +121,14 @@ if __name__ == "__main__":
     ]
     with open("input.txt") as f:
         data = [l.strip(string.whitespace) for l in f]
-    data = test_data
+    # data = test_data
     grid, end = parse_risk_map(data)
     grid = enlarge_map(grid, end)
     end = ((end[0] + 1) * 5 - 1, (end[1] + 1) * 5 - 1)
     visited, pathmaker = dijkstra(grid, (0, 0), end)
     path = make_path(pathmaker, end, (0, 0))
     print("Path of lowest risk:")
-    draw_map(grid, path)
+    # draw_map(grid, path)
     # starting point cost does not count
     risk = sum(grid[coords] for coords in path) - grid[(0, 0)]
     print(f"\nrisk={risk}")
