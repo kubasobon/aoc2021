@@ -29,6 +29,7 @@ class Packet:
         if not self.is_literal():
             self.length_type_id = bits[6]
             self.tail = bits[7:]
+            # print(f"{self.header} {self.type_id} - {self.length_type_id}")
             if self.length_type_id == "0":
                 self.packet_len = 15  # length in bits of sub-packets
                 bytes_to_read = int(self.tail[:15], 2)
@@ -72,7 +73,7 @@ class Packet:
 
     def parse_subpackets(self, bits):
         tail = bits
-        while tail and not all(ch == "0" for ch in tail):
+        while tail != "" and not all(ch == "0" for ch in tail):
             p = Packet(tail)
             self.subpackets.append(p)
             tail = p.tail
@@ -80,7 +81,6 @@ class Packet:
 
 def sum_versions(p):
     total = int(p.header, 2)
-    print(total)
     for sp in p.subpackets:
         total += sum_versions(sp)
     return total
@@ -98,11 +98,10 @@ if __name__ == "__main__":
     with open("input.txt") as f:
         hex_data = f.readline().strip(string.whitespace)
 
-    hex_data = "620080001611562C8802118E34"
+    hex_data = "C0015000016115A2E0802F182340"
     # convert hex to bin, stringify, cut off leading '0b'
     b = str(bin(int(hex_data, 16)))[2:]
     print(f"hex: {hex_data}")
     print(f"bin: {b}")
     pck = Packet(b)
     print(f"sum: {sum_versions(pck)}")
-    breakpoint()
