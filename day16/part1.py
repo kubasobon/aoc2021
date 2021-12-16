@@ -77,6 +77,14 @@ class Packet:
             tail = p.tail
 
 
+def sum_versions(p):
+    total = int(p.header, 2)
+    print(total)
+    for sp in p.subpackets:
+        total += sum_versions(sp)
+    return total
+
+
 if __name__ == "__main__":
     # Test packets:
     #    VVVTTTAAAAABBBBBCCCCC
@@ -95,3 +103,4 @@ if __name__ == "__main__":
     print(f"hex: {hex_data}")
     print(f"bin: {b}")
     p = Packet(b)
+    print(f"sum: {sum_versions(p)}")
