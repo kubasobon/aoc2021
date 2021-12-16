@@ -28,14 +28,13 @@ class Packet:
             self.tail = bits[7:]
             if self.length_type_id == "0":
                 self.packet_len = 15   # length in bits of sub-packets
-                bytes_to_read = Packet(self.tail[:15]).value()
-                assert bytes_to_read is not None
+                bytes_to_read = int(self.tail[:15], 2)
+                self.tail = self.tail[15:]
                 self.subpackets = self.parse_subpackets(self.tail[:bytes_to_read])
                 self.tail = self.tail[bytes_to_read:]
             elif self.length_type_id == "1":
                 self.packet_len = 11   # number of immediate sub-packets
-                packets_to_read = Packet(self.tail[:11]).value()
-                assert packets_to_read is not None
+                packets_to_read = int(self.tail[:11], 2)
                 self.tail = self.tail[11:]
                 for _ in range(packets_to_read):
                     sp = Packet(self.tail[:11])
@@ -67,7 +66,9 @@ class Packet:
 
 if __name__ == "__main__":
     #    VVVTTTAAAAABBBBBCCCCC
-    b = "110100101111111000101000"
+    # b = "110100101111111000101000"
+    #    VVVTTTILLLLLLLLLLLLLLLAAAAAAAAAAABBBBBBBBBBBBBBBB
+    b = "00111000000000000110111101000101001010010001001000000000"
     p = Packet(b)
     print(p.header)
     print(p.type_id)
