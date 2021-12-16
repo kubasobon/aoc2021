@@ -45,6 +45,16 @@ class Packet:
                     self.subpackets.append(sp)
                     self.tail = sp.tail
 
+        if len(self.tail) > 0:
+            self.packet = bits[: -len(self.tail)]
+        else:
+            self.packet = bits
+        if self.is_literal():
+            print(f"L {int(self.header, 2)} = {self.v}: {self.packet}")
+        else:
+            print(f"O {int(self.header, 2)}: {self.packet}")
+        assert self.packet + self.tail == bits
+
     def packet_type(self):
         return int(self.type_id, 2)
 
@@ -94,14 +104,16 @@ if __name__ == "__main__":
     # b = "00111000000000000110111101000101001010010001001000000000"
     #    VVVTTTILLLLLLLLLLLAAAAAAAAAAABBBBBBBBBBBCCCCCCCCCCC
     # b = "11101110000000001101010000001100100000100011000001100000"
+    # hex_data = "A0016C880162017C3686B18A3D4780"
 
     with open("input.txt") as f:
         hex_data = f.readline().strip(string.whitespace)
 
-    hex_data = "C0015000016115A2E0802F182340"
     # convert hex to bin, stringify, cut off leading '0b'
     b = str(bin(int(hex_data, 16)))[2:]
+    b = "0" * (4 * len(hex_data) - len(b)) + b
+    assert len(b) == 4 * len(hex_data)
     print(f"hex: {hex_data}")
-    print(f"bin: {b}")
+    # print(f"bin: {b}")
     pck = Packet(b)
     print(f"sum: {sum_versions(pck)}")
