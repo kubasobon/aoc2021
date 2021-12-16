@@ -85,11 +85,13 @@ if __name__ == "__main__":
     # b = "00111000000000000110111101000101001010010001001000000000"
     #    VVVTTTILLLLLLLLLLLAAAAAAAAAAABBBBBBBBBBBCCCCCCCCCCC
     # b = "11101110000000001101010000001100100000100011000001100000"
+
+    with open("input.txt") as f:
+        hex_data = f.readline().strip(string.whitespace)
+
+    hex_data = "8A004A801A8002F478"
+    # convert hex to bin, stringify, cut off leading '0b'
+    b = str(bin(int(hex_data, 16)))[2:]
+    print(f"hex: {hex_data}")
+    print(f"bin: {b}")
     p = Packet(b)
-    print(p.header)
-    print(p.type_id)
-    print(p.tail)
-    print(p.subpackets)
-    for sp in p.subpackets:
-        if sp.is_literal():
-            print(sp.v)
