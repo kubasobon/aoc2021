@@ -38,10 +38,11 @@ class Packet:
             elif self.length_type_id == "1":
                 self.packet_len = 11  # number of immediate sub-packets
                 packets_to_read = int(self.tail[:11], 2)
+                self.tail = self.tail[11:]
                 for _ in range(packets_to_read):
-                    self.tail = self.tail[11:]
-                    sp = Packet(self.tail[:11])
+                    sp = Packet(self.tail)
                     self.subpackets.append(sp)
+                    self.tail = sp.tail
 
     def packet_type(self):
         return int(self.type_id, 2)
@@ -97,10 +98,11 @@ if __name__ == "__main__":
     with open("input.txt") as f:
         hex_data = f.readline().strip(string.whitespace)
 
-    hex_data = "8A004A801A8002F478"
+    hex_data = "620080001611562C8802118E34"
     # convert hex to bin, stringify, cut off leading '0b'
     b = str(bin(int(hex_data, 16)))[2:]
     print(f"hex: {hex_data}")
     print(f"bin: {b}")
-    p = Packet(b)
-    print(f"sum: {sum_versions(p)}")
+    pck = Packet(b)
+    print(f"sum: {sum_versions(pck)}")
+    breakpoint()
