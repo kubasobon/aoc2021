@@ -1,3 +1,6 @@
+import sys
+
+
 def contains(rect, point_x, point_y):
     xa, ya, xb, yb = rect
     return xa <= point_x <= xb and yb <= point_y <= ya
@@ -30,21 +33,18 @@ def launch_probe(vx, vy, target):
 
 
 if __name__ == "__main__":
-    t = (20, -5, 30, -10)
+    t = (20, -5, 30, -10) # test data
     t = (185, -74, 221, -122)
     assert sign(t[0]) > 0 and sign(t[2]) > 0
     assert sign(t[1]) < 0 and sign(t[3]) < 0
 
     hits = {}
-    for vy in range(-122, 500):
+    for vy in range(-123, 500):
         print(f"+ vy={vy} ", end="\r")
-        for vx in range(1, t[2]):
+        for vx in range(-50, t[2] + 1):
             hit, max_y = launch_probe(vx, vy, t)
             if hit:
                 hits[(vx, vy)] = max_y
     print()
-
-    max_y = max(hits.values())
-    for v, y in hits.items():
-        if y == max_y:
-            print(f"velocity={v} -> altitude={max_y}")
+    unique_v = set(hits.keys())
+    print(f"Unique velocities: {len(unique_v)}")
