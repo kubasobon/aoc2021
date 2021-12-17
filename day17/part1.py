@@ -31,6 +31,7 @@ def launch_probe(vx, vy, target):
 
 if __name__ == "__main__":
     t = (20, -5, 30, -10)
+    t = (185, -74, 221, -122)
     assert sign(t[0]) > 0 and sign(t[2]) > 0
     assert sign(t[1]) < 0 and sign(t[3]) < 0
 
