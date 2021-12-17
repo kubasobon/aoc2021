@@ -36,11 +36,14 @@ if __name__ == "__main__":
     assert sign(t[1]) < 0 and sign(t[3]) < 0
 
     hits = {}
-    for vy in range(1, 100):
+    for vy in range(1, 1000):
+        if vy % 100 == 0:
+            print(f"vy={vy}", end="\r")
         for vx in range(1, t[2]):
             hit, max_y = launch_probe(vx, vy, t)
             if hit:
                 hits[(vx, vy)] = max_y
+    print()
 
     max_y = max(hits.values())
     for v, y in hits.items():
