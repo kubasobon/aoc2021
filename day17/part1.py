@@ -37,7 +37,7 @@ if __name__ == "__main__":
 
     hits = {}
     for vy in range(1, 100):
-        for vx in range(1, 100):
+        for vx in range(1, t[2]):
             hit, max_y = launch_probe(vx, vy, t)
             if hit:
                 hits[(vx, vy)] = max_y
