@@ -25,20 +25,42 @@ class Node:
                 return l4
         return None
 
+    def leftmost(self):
+        if isinstance(self.left, int):
+            return self
+        return self.left.leftmost()
+
+    def rightmost(self):
+        if isinstance(self.right, int):
+            return self
+        return self.right.rightmost()
+
     def explode(self):
         p = self.parent
-        left = True
-        right = True
-        while p:
-            if right and isinstance(p.right, int):
-                right = False
-                p.right += self.right
-            if left and isinstance(p.left, int):
-                left = False
-                p.left += self.left
-            if (not right) and (not left):
+        success = False
+        while p is not None:
+            if p.right is not self and isinstance(p.right, int):
+                    p.right += self.right
+                    success = True
+                    break
+            if p.parent is None:
                 break
             p = p.parent
+        if not success:
+            p.right.leftmost().left += self.right
+
+        p = self.parent
+        success = False
+        while p is not None:
+            if p.left is not self and isinstance(p.left, int):
+                    p.left += self.left
+                    success = True
+                    break
+            if p.parent is None:
+                break
+            p = p.parent
+        if not success:
+            p.left.rightmost().right += self.left
         if self.parent.left is self:
             self.parent.left = 0
         else:
