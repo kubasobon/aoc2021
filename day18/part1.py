@@ -37,30 +37,39 @@ class Node:
 
     def explode(self):
         p = self.parent
-        success = False
+        visited = [self, p]
         while p is not None:
-            if p.right is not self and isinstance(p.right, int):
-                    p.right += self.right
-                    success = True
-                    break
-            if p.parent is None:
+            if p.right in visited:
+                p = p.parent
+                visited.append(p)
+                continue
+            #print(p.right, isinstance(p.right, int), isinstance(p.right, Node))
+            #breakpoint()
+            if isinstance(p.right, int):
+                p.right += self.right
+                break
+            elif isinstance(p.right, Node):
+                p.right.leftmost().left += self.right
                 break
             p = p.parent
-        if not success:
-            p.right.leftmost().left += self.right
+            visited.append(p)
 
         p = self.parent
-        success = False
+        visited = [self, p]
         while p is not None:
-            if p.left is not self and isinstance(p.left, int):
-                    p.left += self.left
-                    success = True
-                    break
-            if p.parent is None:
+            if p.left in visited:
+                p = p.parent
+                visited.append(p)
+                continue
+            if isinstance(p.left, int):
+                p.left += self.left
+                break
+            elif isinstance(p.left, Node):
+                p.left.rightmost().right += self.left
                 break
             p = p.parent
-        if not success:
-            p.left.rightmost().right += self.left
+            visited.append(p)
+
         if self.parent.left is self:
             self.parent.left = 0
         else:
