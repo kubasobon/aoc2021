@@ -1,3 +1,4 @@
+import math
 from collections import Counter
 
 
@@ -25,6 +26,23 @@ class Node:
                 return l4
         return None
 
+    def leftmost_splittable(self):
+        if isinstance(self.left, int):
+            if self.left >= 10:
+                return self
+        else:
+            l = self.left.leftmost_splittable()
+            if l is not None:
+                return l
+        if isinstance(self.right, int):
+            if self.right >= 10:
+                return self
+        else:
+            r = self.right.leftmost_splittable()
+            if r is not None:
+                return r
+        return None
+
     def leftmost(self):
         if isinstance(self.left, int):
             return self
@@ -43,8 +61,8 @@ class Node:
                 p = p.parent
                 visited.append(p)
                 continue
-            #print(p.right, isinstance(p.right, int), isinstance(p.right, Node))
-            #breakpoint()
+            # print(p.right, isinstance(p.right, int), isinstance(p.right, Node))
+            # breakpoint()
             if isinstance(p.right, int):
                 p.right += self.right
                 break
@@ -75,6 +93,16 @@ class Node:
         else:
             self.parent.right = 0
 
+    def split(self):
+        if isinstance(self.left, int) and self.left >= 10:
+            l = math.floor(float(self.left) / 2)
+            r = math.ceil(float(self.left) / 2)
+            self.left = Node(self, self.level + 1, [l, r])
+        elif isinstance(self.right, int) and self.right >= 10:
+            l = math.floor(float(self.right) / 2)
+            r = math.ceil(float(self.right) / 2)
+            self.right = Node(self, self.level + 1, [l, r])
+
 
 if __name__ == "__main__":
     data = [
@@ -90,5 +118,18 @@ if __name__ == "__main__":
         print(tree, end=" -> ")
         print(tree.leftmost_lvl4())
         tree.leftmost_lvl4().explode()
+        print(tree)
+        print()
+
+    data = [
+        "[[[[0,7],4],[15,[0,13]]],[1,1]]",
+        "[[[[0,7],4],[[7,8],[0,13]]],[1,1]]",
+    ]
+    for d in data:
+        l = eval(d)
+        tree = Node(None, 0, l)
+        print(tree, end=" -> ")
+        print(tree.leftmost_splittable())
+        tree.leftmost_splittable().split()
         print(tree)
         print()
