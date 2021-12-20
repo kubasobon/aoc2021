@@ -134,12 +134,14 @@ if __name__ == "__main__":
     with open("input.txt") as f:
         data = [l.strip(string.whitespace) for l in f]
 
-    t = Node(None, 0, eval(data[0]))
-    data = data[1:]
-
-    for d in data:
-        t2 = Node(None, 0, eval(d))
-        t = add(t, t2)
-        process_tree(t)
-
-    print(t.magnitude())
+    mags = []
+    for a in range(len(data)):
+        for b in range(len(data)):
+            if a == b:
+                continue
+            tree_a = Node(None, 0, eval(data[a]))
+            tree_b = Node(None, 0, eval(data[b]))
+            t = add(tree_a, tree_b)
+            process_tree(t)
+            mags.append(t.magnitude())
+    print(max(mags))
