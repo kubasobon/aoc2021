@@ -14,7 +14,7 @@ class Node:
         return f"[{str(self.left)}, {str(self.right)}]"
 
     def leftmost_lvl4(self):
-        if self.level >= 4:
+        if self.level >= 4 and isinstance(self.left, int) and isinstance(self.right, int):
             return self
         if isinstance(self.left, Node):
             l4 = self.left.leftmost_lvl4()
@@ -67,7 +67,10 @@ class Node:
                 p.right += self.right
                 break
             elif isinstance(p.right, Node):
-                p.right.leftmost().left += self.right
+                try:
+                    p.right.leftmost().left += self.right
+                except:
+                    breakpoint()
                 break
             p = p.parent
             visited.append(p)
@@ -104,32 +107,45 @@ class Node:
             self.right = Node(self, self.level + 1, [l, r])
 
 
+def process_tree(tree):
+    while True:
+        lvl4 = tree.leftmost_lvl4()
+        if lvl4 is not None:
+            lvl4.explode()
+            continue
+        splittable = tree.leftmost_splittable()
+        if splittable is not None:
+            splittable.split()
+            continue
+        break
+
+
+def add(t1, t2):
+    a = f"[{t1.__repr__()}, {t2.__repr__()}]"
+    return Node(None, 0, eval(a))
+
+
 if __name__ == "__main__":
     data = [
-        "[[[[[9,8],1],2],3],4]",
-        "[7,[6,[5,[4,[3,2]]]]]",
-        "[[6,[5,[4,[3,2]]]],1]",
-        "[[3,[2,[1,[7,3]]]],[6,[5,[4,[3,2]]]]]",
-        "[[3,[2,[8,0]]],[9,[5,[4,[3,2]]]]]",
+        "[[[0,[4,5]],[0,0]],[[[4,5],[2,6]],[9,5]]]",
+        "[7,[[[3,7],[4,3]],[[6,3],[8,8]]]]",
+        "[[2,[[0,8],[3,4]]],[[[6,7],1],[7,[1,6]]]]",
+        "[[[[2,4],7],[6,[0,5]]],[[[6,8],[2,8]],[[2,1],[4,5]]]]",
+        "[7,[5,[[3,8],[1,4]]]]",
+        "[[2,[2,2]],[8,[8,1]]]",
+        "[2,9]",
+        "[1,[[[9,3],9],[[9,0],[0,7]]]]",
+        "[[[5,[7,4]],7],1]",
+        "[[[[4,2],2],6],[8,7]]",
     ]
-    for d in data:
-        l = eval(d)
-        tree = Node(None, 0, l)
-        print(tree, end=" -> ")
-        print(tree.leftmost_lvl4())
-        tree.leftmost_lvl4().explode()
-        print(tree)
-        print()
 
-    data = [
-        "[[[[0,7],4],[15,[0,13]]],[1,1]]",
-        "[[[[0,7],4],[[7,8],[0,13]]],[1,1]]",
-    ]
+    t = Node(None, 0, eval(data[0]))
+    data = data[1:]
     for d in data:
-        l = eval(d)
-        tree = Node(None, 0, l)
-        print(tree, end=" -> ")
-        print(tree.leftmost_splittable())
-        tree.leftmost_splittable().split()
-        print(tree)
+        print("  ", t)
+        print("+ ", d)
+        t = add(t, Node(None, 0, eval(d)))
+        process_tree(t)
+        print("= ", t)
         print()
+    print(t)
