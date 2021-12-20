@@ -1,5 +1,5 @@
+import string
 import math
-from collections import Counter
 
 
 class Node:
@@ -14,7 +14,11 @@ class Node:
         return f"[{str(self.left)}, {str(self.right)}]"
 
     def leftmost_lvl4(self):
-        if self.level >= 4 and isinstance(self.left, int) and isinstance(self.right, int):
+        if (
+            self.level >= 4
+            and isinstance(self.left, int)
+            and isinstance(self.right, int)
+        ):
             return self
         if isinstance(self.left, Node):
             l4 = self.left.leftmost_lvl4()
@@ -106,6 +110,11 @@ class Node:
             r = math.ceil(float(self.right) / 2)
             self.right = Node(self, self.level + 1, [l, r])
 
+    def magnitude(self):
+        l = self.left if isinstance(self.left, int) else self.left.magnitude()
+        r = self.right if isinstance(self.right, int) else self.right.magnitude()
+        return 3 * l + 2 * r
+
 
 def process_tree(tree):
     while True:
@@ -126,26 +135,15 @@ def add(t1, t2):
 
 
 if __name__ == "__main__":
-    data = [
-        "[[[0,[4,5]],[0,0]],[[[4,5],[2,6]],[9,5]]]",
-        "[7,[[[3,7],[4,3]],[[6,3],[8,8]]]]",
-        "[[2,[[0,8],[3,4]]],[[[6,7],1],[7,[1,6]]]]",
-        "[[[[2,4],7],[6,[0,5]]],[[[6,8],[2,8]],[[2,1],[4,5]]]]",
-        "[7,[5,[[3,8],[1,4]]]]",
-        "[[2,[2,2]],[8,[8,1]]]",
-        "[2,9]",
-        "[1,[[[9,3],9],[[9,0],[0,7]]]]",
-        "[[[5,[7,4]],7],1]",
-        "[[[[4,2],2],6],[8,7]]",
-    ]
+    with open("input.txt") as f:
+        data = [l.strip(string.whitespace) for l in f]
 
     t = Node(None, 0, eval(data[0]))
     data = data[1:]
+
     for d in data:
-        print("  ", t)
-        print("+ ", d)
-        t = add(t, Node(None, 0, eval(d)))
+        t2 = Node(None, 0, eval(d))
+        t = add(t, t2)
         process_tree(t)
-        print("= ", t)
-        print()
-    print(t)
+
+    print(t.magnitude())
